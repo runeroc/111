@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EXLTO-GAMES - сайт для фанатів комп'ютерних ігор. Ділимося посиланнями на новинки і популярні ігри для ПК.">
+    <meta name="keywords" content="ігри, ПК, комп'ютерні ігри, новинки ігор, популярні ігри">
+    <meta name="author" content="EXLTO-GAMES">
+    <title>EXLTO-GAMES</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        header {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 1.25rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .main-content {
+            background-color: #ffffff;
+            padding: 1.25rem;
+            margin: 1.25rem auto;
+            border-radius: 0.625rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 1.875rem;
+        }
+        h2 {
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 0.625rem;
+            font-size: 2rem;
+            margin-bottom: 0.625rem;
+        }
+        p {
+            line-height: 1.7;
+        }
+        .admin-section {
+            display: none;
+        }
+        #login-form {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>EXLTO-GAMES</h1>
+            <div id="user-info">
+                <button id="login-btn">Увійти</button>
+                <button id="logout-btn" style="display: none;">Вийти</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="main-content">
+            <section class="section">
+                <h2>Останні Ігри</h2>
+                <div id="game-list">
+                    <!-- Ігри будуть додані тут через JavaScript -->
+                </div>
+            </section>
+
+            <section class="section admin-section" id="admin-section">
+                <h2>Адмін панель</h2>
+                <button id="add-game-btn">Додати гру</button>
+                <div id="add-game-form" style="display: none;">
+                    <input type="text" id="game-name" placeholder="Назва гри">
+                    <input type="text" id="game-description" placeholder="Опис гри">
+                    <input type="text" id="game-link" placeholder="Посилання на гру">
+                    <input type="text" id="game-image" placeholder="Посилання на зображення">
+                    <button id="submit-game">Зберегти гру</button>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Коментарі</h2>
+                <div id="comment-list">
+                    <!-- Коментарі будуть додані тут через JavaScript -->
+                </div>
+                <form id="comment-form" style="display: none;">
+                    <h3>Залишити коментар</h3>
+                    <input type="text" id="comment-name" placeholder="Ваше ім'я" required>
+                    <textarea id="comment-text" placeholder="Ваш коментар" required></textarea>
+                    <input type="number" id="comment-rating" min="1" max="5" placeholder="Рейтинг (1-5)" required>
+                    <button type="submit">Відправити</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <div id="login-form">
+        <input type="text" id="username" placeholder="Логін">
+        <input type="password" id="password" placeholder="Пароль">
+        <button id="login-submit">Увійти</button>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Елементи
+            const loginForm = document.getElementById('login-form');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const commentForm = document.getElementById('comment-form');
+            const adminSection = document.getElementById('admin-section');
+            const addGameBtn = document.getElementById('add-game-btn');
+            const addGameForm = document.getElementById('add-game-form');
+
+            // Авторизація
+            loginBtn.addEventListener('click', () => {
+                loginForm.style.display = 'block';
+            });
+
+            logoutBtn.addEventListener('click', () => {
+                currentUser = null;
+                updateUI();
+            });
+
+            document.getElementById('login-submit').addEventListener('click', () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                authenticateUser(username, password);
+            });
+
+            // Додавання гри
+            addGameBtn.addEventListener('click', () => {
+                addGameForm.style.display = 'block';
+            });
+
+            document.getElementById('submit-game').addEventListener('click', () => {
+                const name = document.getElementById('game-name').value;
+                const description = document.getElementById('game-description').value;
+                const link = document.getElementById('game-link').value;
+                const image = document.getElementById('game-image').value;
+                addGame(name, description, link, image);
+            });
+
+            updateUI();
+        });
+
+        function authenticateUser(username, password) {
+            // Запит до серверу для авторизації
+            // Тут потрібно додати логіку для перевірки логіну і пароля
+            if (username === 'admin' && password === 'adminpass') {
+                currentUser = { role: 'admin' };
+            } else if (username === 'user' && password === 'userpass') {
+                currentUser = { role: 'user' };
+            } else {
+                alert('Невірний логін або пароль');
+            }
+
+            updateUI();
+        }
+
+        function updateUI() {
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const commentForm = document.getElementById('comment-form');
+            const adminSection = document.getElementById('admin-section');
+
+            if (currentUser) {
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+
+                if (currentUser.role === 'admin') {
+                    adminSection.style.display = 'block';
+                    commentForm.style.display = 'none';
+                } else {
+                    adminSection.style.display = 'none';
+                    commentForm.style.display = 'block';
+                }
+            } else {
+                loginBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+                adminSection.style.display = 'none';
+                commentForm.style.display = 'none';
+            }
+        }
+
+        async function addGame(name, description, link, image) {
+            try {
+                const response = await fetch('/api/add-game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, description, link, image }),
+                });
+                const result = await response.json();
+                alert('Гра додана успішно!');
+            } catch (error) {
+                console.error('Помилка при додаванні гри:', error);
+            }
+        }
+    </script>
+</body>
+</html>
